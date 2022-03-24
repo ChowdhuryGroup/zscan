@@ -84,14 +84,13 @@ class Oscilloscope:
             # h is signed WORD, H is unsigned WORD
             self.raw_data.append(self.inst.query_binary_values(':WAVeform:SOURce CHANnel'+str(channel)+';DATA?', container=np.array, datatype='h', is_big_endian=False))
 
+    # Transform binary IEEE 488.2 data to actual values
+    def binary_to_float(self, data):
+        return ((data - int(self.preamble['yreference'])) * float(self.preamble['yincrement'])) + float(self.preamble['yorigin'])
+    
     def process_data(self):
         # Calculate time values from preamble
         self.times = (np.arange(0,int(self.preamble['points'])) - int(self.preamble['xreference']))*float(self.preamble['xincrement']) + float(self.preamble['xorigin'])
-
-
-        # Transform binary IEEE 488.2 data to actual values
-        def binary_to_float(data):
-            return ((data - int(self.preamble['yreference'])) * float(self.preamble['yincrement'])) + float(self.preamble['yorigin'])
 
         '''
         IEEE 488.2 Data types
@@ -101,7 +100,7 @@ class Oscilloscope:
         '''
         self.data = []
         for i in range(len(self.channels)):
-            self.data.append(binary_to_float(self.raw_data[i]))
+            self.data.append(self.binary_to_float(self.raw_data[i]))
         
 
     def plot_data(self):
