@@ -1,4 +1,3 @@
-from turtle import pos
 import oscilloscope
 import stage_control
 import matplotlib.pyplot as plt
