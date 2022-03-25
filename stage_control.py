@@ -1,5 +1,4 @@
 import serial
-import numpy as np
 import time as t
 import re
 

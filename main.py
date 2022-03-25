@@ -3,7 +3,9 @@ import stage_control
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Initialize hardware
 keysight_oscope = oscilloscope.Oscilloscope('C:/Program Files/IVI Foundation/VISA/Win64/ktvisa/lib/msc/visa32.lib')
+# Add stage initialization. Apparently needs to be separated out in stage_control
 
 positions = np.linspace(-10, 10, 100, endpoint=True)
 print(positions)
