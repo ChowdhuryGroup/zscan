@@ -7,7 +7,6 @@ keysight_oscope = oscilloscope.Oscilloscope('/opt/keysight/iolibs/libktvisa32.so
 keysight_oscope.select_channels((1,2,3))
 
 positions = np.linspace(-10, 10, 100, endpoint=True)
-print(positions)
 
 # 3 Rows, 1 for each channel
 average_voltage = np.array((len(keysight_oscope.channels), len(positions)))
