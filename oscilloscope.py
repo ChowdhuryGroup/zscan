@@ -7,7 +7,7 @@ import time
 class Oscilloscope:
 
     def __init__(self, visa_library_binary_location: str) -> None:
-        self.rm = pyvisa.ResourceManager(visa_library_binary_location) #'/opt/keysight/iolibs/libktvisa32.so')
+        self.rm = pyvisa.ResourceManager(visa_library_binary_location)
         inst_list = self.rm.list_resources()
         print('Instrument list:')
         print(inst_list)

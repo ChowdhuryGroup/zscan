@@ -3,14 +3,15 @@ import stage_control
 import matplotlib.pyplot as plt
 import numpy as np
 
-keysight_oscope = oscilloscope.Oscilloscope('C:/Program Files/IVI Foundation/VISA/Win64/ktvisa/lib/msc/visa32.lib')
+keysight_oscope = oscilloscope.Oscilloscope('/opt/keysight/iolibs/libktvisa32.so')
+keysight_oscope.select_channels((1,2,3))
 
 positions = np.linspace(-10, 10, 100, endpoint=True)
 print(positions)
 
 # 3 Rows, 1 for each channel
-average_voltage = np.array((3, len(positions)))
-stdev_voltage = np.array((3, len(positions)))
+average_voltage = np.array((len(keysight_oscope.channels), len(positions)))
+stdev_voltage = np.array((len(keysight_oscope.channels), len(positions)))
 
 for i in range(len(positions)):
     print(positions[i])
@@ -21,7 +22,7 @@ for i in range(len(positions)):
     keysight_oscope.process_data()
     
     # Loop through 3 photodiode signals
-    for j in range(3):
+    for j in range(len(keysight_oscope.channels)):
         avg = np.average(keysight_oscope.data[j])
         stdev = np.std(keysight_oscope.data[j])
         average_voltage[j,i] = avg
