@@ -1,7 +1,38 @@
 import serial
 import time as t
 import re
+import sys
+import glob
+import serial
 
+def serial_ports():
+    """ Grabbed from: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
+        Lists serial port names
+
+        :raises EnvironmentError:
+            On unsupported or unknown platforms
+        :returns:
+            A list of the serial ports available on the system
+    """
+    if sys.platform.startswith('win'):
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # this excludes your current terminal "/dev/tty"
+        ports = glob.glob('/dev/tty[A-Za-z]*')
+    elif sys.platform.startswith('darwin'):
+        ports = glob.glob('/dev/tty.*')
+    else:
+        raise EnvironmentError('Unsupported platform')
+
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return result
 
 # model of VXM stage bi-slide E04, conversion factor btwn steps and distance
 E04 = .0254 #mm/step
@@ -90,10 +121,10 @@ def pos_check(port):
         s.flushOutput()
         s.write(b'C,Q')
         s.close()
-    pos = pos.decode()
-    step = re.sub('[^0-9]','',pos)
-    print(step)
-    return int(step)
+    pos = pos.decode(encoding='ascii')
+    
+    print(pos)
+    #return int(pos)
 
 
 def rel_move(port,dist,pause,CW=True):
@@ -138,8 +169,8 @@ def rel_move(port,dist,pause,CW=True):
         s.write(b'C,Q')
         s.close()
 
-# curently (3/18/22) no distance/step check after either move program
-def loop_move(port,tot_dist,increments,pause,CW=True):
+# Currently (2022-03-18) no distance/step check after either move program
+def loop_move(port: str, tot_dist: float, increments: int, pause: float, direction: str='+'):
     '''
     loops the action of 'rel_move' the number of times given in increments, moving a total distance give by tot_dist input
     inputs:
@@ -150,12 +181,13 @@ def loop_move(port,tot_dist,increments,pause,CW=True):
     pause - float,[sec] - the amount of time you would like to wait before and after each incremental move
     ^ NOTE: now in a loop, VXM is given a 2 pause commands in between each move, so VXM will wait pause*2 seconds in between each move
     ^ minimum amount of time able to wait: 1e-5 sec (10 microseconds),
-    CW - bool - direction stage will move, default CW positive direction (away from motor)
+    direction - direction stage will move, default '+' direction (away from motor)
     '''
     # check inputs
     assert(type(port)==str),'port input must be string'
     assert(type(increments)==int),'increments input must be integer'
-    assert(type(CW)==bool),'direction input must be boolean'
+    assert(direction == '+' or direction == '-'),'direction input must be + or -'
+    
     # calculate time for VXM inputs, along with time for sleep
     if (pause < .03):
         p = round(pause/1.e-5) # [*10 microsec]
@@ -164,25 +196,64 @@ def loop_move(port,tot_dist,increments,pause,CW=True):
         p = round(pause/.1) # [*.1 sec]
         time_com = 'P'+str(p)
     z = increments*pause*2. + 1. # sec
+    
     # determine steps nessecary for each incremental move
     dps = tot_dist/increments # dist per increment [mm]
     spi = round(dps/E04) # steps per increment [steps]
-    if CW:
+    if direction == '+':
         mv_com = 'I1M'+str(spi)
-    else:
+    elif direction == '-':
         mv_com = 'I1M-'+str(spi)
+    
     # comand string
     cmd = time_com+','+mv_com+','+time_com+',L'+str(increments)+',R'
+    print(cmd)
+
     # open port
     with serial.Serial() as s:
         s.port = port
         s.timeout = 0
         s.open()
         s.flushOutput()
-        s.write(b'F,C')
+        s.write('F,C'.encode(encoding='ascii'))
         s.flushOutput()
-        s.write(cmd.encode())
+        s.write(cmd.encode(encoding='ascii'))
         t.sleep(z)
-        s.write(b'C,Q')
+        s.write('C,Q'.encode(encoding='ascii'))
         s.close()
 
+def home(port):
+    with serial.Serial() as s:
+        s.port = port
+        s.timeout = 0
+        s.open()
+        s.flushOutput()
+        s.write('F,C'.encode(encoding='ascii'))
+        s.flushOutput()
+        s.write('S1M1000,I1M-0,R'.encode(encoding='ascii'))
+        t.sleep(5)
+        s.write('IA1M-0,R'.encode(encoding='ascii'))
+        s.write('C,Q'.encode(encoding='ascii'))
+        s.close()
+
+def goto(port: str, index: int):
+    with serial.Serial() as s:
+        s.port = port
+        s.timeout = 0
+        s.open()
+        s.flushOutput()
+        s.write('F,C'.encode(encoding='ascii'))
+        s.flushOutput()
+        # MUST HAVE A PAUSE BEFORE INDEX COMMAND!!!!
+        s.write(('P1,IA1M4000,R').encode(encoding='ascii'))
+        t.sleep(5)
+        s.write('C,Q'.encode(encoding='ascii'))
+        s.close()
+
+vxm_controller = serial_ports()[0]
+print(vxm_controller)
+#home(vxm_controller)
+goto(vxm_controller, 4000)
+goto(vxm_controller, 0)
+#loop_move(vxm_controller, 30., 5, 1., '+')
+print(pos_check(vxm_controller))

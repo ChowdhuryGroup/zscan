@@ -65,7 +65,6 @@ class Oscilloscope:
         preamble_data = self.inst.query(':WAVeform:PREamble?').split(',')
         preamble_data[-1] = preamble_data[-1][:-1]
         self.preamble = dict(zip(preamble_keys, preamble_data))
-        print(self.preamble)
 
 
     def set_signal_duration(self, duration: float):
@@ -78,6 +77,8 @@ class Oscilloscope:
         # Start a single acquisition
         self.inst.write(':SINGle')
         time.sleep(duration+1)
+
+        self.get_preamble()    
 
         self.raw_data = []
         for channel in self.channels:
