@@ -7,7 +7,7 @@ import numpy as np
 keysight_oscope = oscilloscope.Oscilloscope('/opt/keysight/iolibs/libktvisa32.so')
 keysight_oscope.select_channels((1,2,3))
 
-# model of VXM stage bi-slide E04, conversion factor btwn steps and distance
+# model of VXM stage bi-slide E04, conversion factor btween steps and distance
 # E04 = .0254 #mm/step
 stage = stage_control.VXMController(step_size=0.0254)
 

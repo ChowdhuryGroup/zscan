@@ -74,16 +74,24 @@ class Oscilloscope:
         self.inst.write(':TIMebase:RANGe '+str(duration))
     
 
+    def get_channel_offset(self, channel: int):
+        if channel not in [1,2,3,4]:
+            raise ValueError('Channel can only be one of 1, 2, 3, or 4')
+        return float(self.inst.query(':CHANnel'+str(channel)+':OFFSet?'))
+
+
     def single_acquisition(self, duration: float):
         self.set_signal_duration(duration)
         # Start a single acquisition
         self.inst.write(':SINGle')
         time.sleep(duration+1)
 
-        self.get_preamble()    
-
+        self.get_preamble()
+        self.offsets = [self.get_channel_offset(channel) for channel in self.channels]
+        print(self.offsets)
         self.raw_data = []
         for channel in self.channels:
+            
             # h is signed WORD, H is unsigned WORD
             self.raw_data.append(self.inst.query_binary_values(':WAVeform:SOURce CHANnel'+str(channel)+';DATA?', container=np.array, datatype='h', is_big_endian=False))
 
@@ -103,7 +111,7 @@ class Oscilloscope:
         '''
         self.data = []
         for i in range(len(self.channels)):
-            self.data.append(self.binary_to_float(self.raw_data[i]))
+            self.data.append(self.binary_to_float(self.raw_data[i]) + self.offsets[i])
         
 
     def plot_data(self):
