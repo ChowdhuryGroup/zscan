@@ -49,9 +49,11 @@ class VXMController:
         self.take_control(echo=False) # may change echo to be class property
         self.set_speed(500)
         self.home()
+        print('Determining range of motion...')
         self.move_max()
         self.max_index = self.poll_index()-1
         self.home()
+        self.current_index = 0
 
 
     def __del__(self):
@@ -97,7 +99,7 @@ class VXMController:
         time.sleep(.1)
         index_raw = self.connection.readline()
         index = index_raw.decode(encoding='ascii').strip('^')
-        print(index)
+        print('Current index: '+index)
         return int(index)
     
 
@@ -106,7 +108,7 @@ class VXMController:
         Move to the maximum position (closest to motor)
         '''
         self.serial_write('I1M-0,R')
-        time.sleep(5000/self.speed)
+        time.sleep(5000/self.speed+0.1)
 
 
     def move_max(self):
@@ -114,7 +116,7 @@ class VXMController:
         Move to the maximum position (furthest from motor)
         '''
         self.serial_write('I1M0,R')
-        time.sleep(5000/self.speed)
+        time.sleep(5000/self.speed+0.1)
     
 
     def set_zero(self):
@@ -141,6 +143,8 @@ class VXMController:
         print('Moving to index: '+str(index))
         self.set_speed(speed)
         self.serial_write('P1,IA1M'+str(index)+',R')
+        time.sleep((index-self.current_index)/speed+0.1)
+        self.current_index = index
     
 
     def set_speed(self, speed: int):

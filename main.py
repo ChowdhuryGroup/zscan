@@ -12,15 +12,16 @@ keysight_oscope.select_channels((1,2,3))
 stage = stage_control.VXMController(step_size=0.0254)
 
 # Step locations
-positions = np.linspace(0, 10, 100, endpoint=True)
+positions = np.arange(0, 4000, 1000, dtype=int)
+
 
 # 3 Rows, 1 for each channel
 average_voltage = np.ndarray((len(keysight_oscope.channels), len(positions)))
 stdev_voltage = np.ndarray((len(keysight_oscope.channels), len(positions)))
 
 for i in range(len(positions)):
-    print('Moving to :', positions[i])
     # move stage to position
+    stage.move_absolute(positions[i], 1000)
 
     # acquire signal for 1 second
     keysight_oscope.single_acquisition(1)
@@ -38,10 +39,12 @@ for i in range(len(positions)):
                       'PD3: {:.2E}\t'.format(average_voltage[2,i])
     print(voltages_string)
 
-voltage_data = np.array(zip(positions, average_voltage[0,:], stdev_voltage[0,:], average_voltage[1,:], stdev_voltage[1,:], average_voltage[2,:], stdev_voltage[2,:]))
+voltage_data = np.array(list(zip(positions, average_voltage[0,:], stdev_voltage[0,:], average_voltage[1,:], stdev_voltage[1,:], average_voltage[2,:], stdev_voltage[2,:])))
 np.savetxt('raw_voltages.tsv', voltage_data, delimiter='\t')
 
-plt.plot(positions, average_voltage)
+plt.plot(positions, average_voltage[0,:], color='yellow')
+plt.plot(positions, average_voltage[1,:], color='green')
+plt.plot(positions, average_voltage[2,:], color='blue')
 plt.show()
 
 
