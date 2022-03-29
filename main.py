@@ -3,10 +3,16 @@ import stage_control
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Initialize Devices
 keysight_oscope = oscilloscope.Oscilloscope('/opt/keysight/iolibs/libktvisa32.so')
 keysight_oscope.select_channels((1,2,3))
 
-positions = np.linspace(-10, 10, 100, endpoint=True)
+# model of VXM stage bi-slide E04, conversion factor btwn steps and distance
+# E04 = .0254 #mm/step
+stage = stage_control.VXMController(step_size=0.0254)
+
+# Step locations
+positions = np.linspace(0, 10, 100, endpoint=True)
 
 # 3 Rows, 1 for each channel
 average_voltage = np.ndarray((len(keysight_oscope.channels), len(positions)))
