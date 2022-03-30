@@ -12,7 +12,7 @@ keysight_oscope.select_channels((1,2,3))
 stage = stage_control.VXMController(step_size=0.0254)
 
 # Step locations
-positions = np.arange(0, 4000, 1000, dtype=int)
+positions = np.arange(0, stage.max_index, 10, dtype=int)
 
 
 # 3 Rows, 1 for each channel
@@ -36,7 +36,10 @@ for i in range(len(positions)):
 
     voltages_string = 'PD1: {:.2E}\t'.format(average_voltage[0,i]) + \
                       'PD2: {:.2E}\t'.format(average_voltage[1,i]) + \
-                      'PD3: {:.2E}\t'.format(average_voltage[2,i])
+                      'PD3: {:.2E}\t'.format(average_voltage[2,i]) + \
+                      'PD2/PD1: {:.2E}\t'.format(average_voltage[1,i]/average_voltage[0,i]) + \
+                      'PD3/PD1: {:.2E}\t'.format(average_voltage[2,i]/average_voltage[0,i]) + \
+                      'PD3/PD2: {:.2E}\t'.format(average_voltage[2,i]/average_voltage[1,i])
     print(voltages_string)
 
 voltage_data = np.array(list(zip(positions, average_voltage[0,:], stdev_voltage[0,:], average_voltage[1,:], stdev_voltage[1,:], average_voltage[2,:], stdev_voltage[2,:])))
@@ -46,5 +49,7 @@ plt.plot(positions, average_voltage[0,:], color='yellow')
 plt.plot(positions, average_voltage[1,:], color='green')
 plt.plot(positions, average_voltage[2,:], color='blue')
 plt.show()
+
+#TODO: add live blitting plot
 
 
