@@ -22,11 +22,12 @@ class LivePlot():
         self.background = self.fig.canvas.copy_from_bbox(self.fig.bbox)
 
         for i in range(len(self.artists)):
-            self.artists[i].set_data(np.zeros(100), np.zeros(100))
+            self.artists[i].set_xdata(np.arange(100))
+            self.artists[i].set_ydata(np.ones(100))
             self.ax.draw_artist(self.artists[i])
 
         # Copy image to GUI state, but may not show yet
-        self.fig.canvas.blit(self.fig.bbox)
+        self.fig.canvas.draw()
         # Flush any pending GUI events, paint the window
         self.fig.canvas.flush_events()
         
@@ -45,8 +46,7 @@ class LivePlot():
             self.ax.draw_artist(self.artists[i])
         
         # Copy image to GUI state, but may not show yet
-        #self.fig.canvas.blit(self.fig.bbox)
-        self.fig.draw()
+        self.fig.canvas.blit(self.fig.bbox)
 
         # flush any pending GUI events, re-painting the screen if needed
         self.fig.canvas.flush_events()
@@ -54,5 +54,5 @@ class LivePlot():
 
 test = LivePlot()
 
-test.update(np.arange(0,100,1), np.ones((3,100)))
+#test.update(np.arange(0,100,1), np.ones((3,100)))
 input()
