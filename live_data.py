@@ -10,9 +10,9 @@ class LivePlot():
         self.ax.set_ylim(0., 2.)
         self.ax.set_xlim(0., 100.)
 
-        self.artists = (self.ax.plot([], [], animated=True, color='gold')[0],
-                        self.ax.plot([], [], animated=True, color='green')[0],
-                        self.ax.plot([], [], animated=True, color='blue')[0])
+        self.artists = (self.ax.plot([], [], color='gold')[0],
+                        self.ax.plot([], [], color='green')[0],
+                        self.ax.plot([], [], color='blue')[0])
 
         # Shows the plot but doesn't stop the program
         plt.show(block=False)
@@ -24,7 +24,6 @@ class LivePlot():
         for i in range(len(self.artists)):
             self.artists[i].set_xdata(np.arange(100))
             self.artists[i].set_ydata(np.ones(100))
-            self.ax.draw_artist(self.artists[i])
 
         # Copy image to GUI state, but may not show yet
         self.fig.canvas.draw()
