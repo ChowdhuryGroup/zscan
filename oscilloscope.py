@@ -69,9 +69,10 @@ class Oscilloscope:
         self.preamble = dict(zip(preamble_keys, preamble_data))
 
 
-    def set_signal_duration(self, duration: float):
-        # Set signal duration (maximum 500s)
-        self.inst.write(':TIMebase:RANGe '+str(duration))
+    def set_signal_duration(self, duration: str): #float):
+        # Set signal duration in seconds (maximum 500s)
+        print(type(duration))
+        self.inst.write(':TIMebase:RANGe '+duration) #str(duration))
     
 
     def get_channel_offset(self, channel: int):
@@ -81,7 +82,7 @@ class Oscilloscope:
 
 
     def single_acquisition(self, duration: float):
-        self.set_signal_duration(duration)
+        #self.set_signal_duration(duration)
         # Start a single acquisition
         self.inst.write(':SINGle')
         time.sleep(duration+1)

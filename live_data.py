@@ -52,6 +52,13 @@ class LivePlot():
 
 
 test = LivePlot()
+import time
+x = np.linspace(0, 100, 1000)
+test_data = np.ndarray((3,len(x)))
+for p in range(100):
+    test_data[0,:] = np.cos(x-0.05*p)+1
+    test_data[1,:] = np.cos(x-0.10*p)+1
+    test_data[2,:] = np.cos(x-0.15*p)+1
+    test.update(x, test_data)
 
-#test.update(np.arange(0,100,1), np.ones((3,100)))
-input()
+    time.sleep(0.1)

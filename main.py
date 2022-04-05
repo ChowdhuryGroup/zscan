@@ -12,12 +12,14 @@ keysight_oscope.select_channels((1,2,3))
 stage = stage_control.VXMController(step_size=0.0254)
 
 # Step locations
-positions = np.arange(0, stage.max_index, 10, dtype=int)
+positions = np.arange(0, stage.max_index, 100, dtype=int)
 
 
 # 3 Rows, 1 for each channel
 average_voltage = np.ndarray((len(keysight_oscope.channels), len(positions)))
 stdev_voltage = np.ndarray((len(keysight_oscope.channels), len(positions)))
+
+keysight_oscope.set_signal_duration("50e-3")
 
 for i in range(len(positions)):
     # move stage to position
@@ -29,6 +31,7 @@ for i in range(len(positions)):
     
     # Loop through 3 photodiode signals
     for j in range(len(keysight_oscope.channels)):
+        np.savetxt('test_data'+str(j)+'.tsv', keysight_oscope.data[j], delimiter='\t')
         avg = np.average(keysight_oscope.data[j])
         stdev = np.std(keysight_oscope.data[j])
         average_voltage[j,i] = avg
