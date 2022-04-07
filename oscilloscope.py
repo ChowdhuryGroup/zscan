@@ -89,7 +89,7 @@ class Oscilloscope:
 
         self.get_preamble()
         self.offsets = [self.get_channel_offset(channel) for channel in self.channels]
-        print(self.offsets)
+        print('offsets: ', self.offsets)
         self.raw_data = []
         for channel in self.channels:
             

@@ -143,7 +143,7 @@ class VXMController:
         print('Moving to index: '+str(index))
         self.set_speed(speed)
         self.serial_write('P1,IA1M'+str(index)+',R')
-        time.sleep((index-self.current_index)/speed+0.1)
+        time.sleep(abs(index-self.current_index)/speed+0.1)
         self.current_index = index
     
 
