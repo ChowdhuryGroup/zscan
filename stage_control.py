@@ -82,6 +82,7 @@ class VXMController:
         Clear controller memory of commands and return to manual mode
         '''
         self.serial_write('C,Q')
+        time.sleep(0.1)
     
 
     def kill_program(self):

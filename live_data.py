@@ -5,7 +5,7 @@ import numpy as np
 class LivePlot():
 
     def __init__(self):
-        self.fig, self.ax  = plt.subplots(figsize=(11,9))
+        self.fig, self.ax  = plt.subplots(figsize=(8,5))
 
         self.ax.set_ylim(0., 2.)
         self.ax.set_xlim(0., 100.)
@@ -53,8 +53,9 @@ class LivePlot():
 
 test = LivePlot()
 import time
+
 x = np.linspace(0, 100, 1000)
-test_data = np.ndarray((3,len(x)))
+test_data = [[0.],[0.],[0.]]
 for p in range(100):
     test_data[0,:] = np.cos(x-0.05*p)+1
     test_data[1,:] = np.cos(x-0.10*p)+1

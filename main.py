@@ -12,17 +12,17 @@ keysight_oscope.select_channels((1,))
 stage = stage_control.VXMController(step_size=0.0254)
 
 # Step locations
-positions = np.arange(0, stage.max_index, 100, dtype=int)
+positions = np.arange(0, stage.max_index, 50, dtype=int) #stage.max_index
 
 
 # 3 Rows, 1 for each channel
-average_voltage = np.ndarray((3, len(positions)))
-stdev_voltage = np.ndarray((3, len(positions)))
+average_voltage = np.zeros((3, len(positions)))
+stdev_voltage = np.zeros((3, len(positions)))
 
-keysight_oscope.set_signal_duration("50e-3")
+keysight_oscope.set_signal_duration("500e-3")
 
 # Loop through 3 photodiode signals
-for j in range(3): #len(keysight_oscope.channels)):
+for j in range(1): #len(keysight_oscope.channels)):
     input('Plug in photodiode '+str(j+1)+', press Enter when ready to proceed...')
 
     # Loop through positions
@@ -41,13 +41,17 @@ for j in range(3): #len(keysight_oscope.channels)):
     
     stage.move_absolute(0, 1000)
 
+del stage
+del keysight_oscope
 
 voltage_data = np.array(list(zip(positions, average_voltage[0,:], stdev_voltage[0,:], average_voltage[1,:], stdev_voltage[1,:], average_voltage[2,:], stdev_voltage[2,:])))
 np.savetxt('raw_voltages.tsv', voltage_data, delimiter='\t')
 
-plt.plot(positions, average_voltage[0,:], color='yellow')
-plt.plot(positions, average_voltage[1,:], color='green')
-plt.plot(positions, average_voltage[2,:], color='blue')
+plt.plot(positions, average_voltage[0,:], color='magenta', label='first')
+plt.plot(positions, average_voltage[1,:], color='green', label='second')
+plt.plot(positions, average_voltage[1,:] / average_voltage[0,:], color='orange', label='ratio')
+plt.plot(positions, average_voltage[2,:], color='blue', label='third')
+plt.legend()
 plt.show()
 
 #TODO: add live blitting plot
