@@ -41,7 +41,7 @@ class LivePlot():
         self.fig.canvas.restore_region(self.background)
 
         for i in range(len(self.artists)):
-            self.artists[i].set_data(x_vals, data[i,:])
+            self.artists[i].set_data(x_vals, data[i][:])
             self.ax.draw_artist(self.artists[i])
         
         # Copy image to GUI state, but may not show yet
@@ -56,10 +56,10 @@ import time
 
 x = np.linspace(0, 100, 1000)
 test_data = [[0.],[0.],[0.]]
-for p in range(100):
-    test_data[0,:] = np.cos(x-0.05*p)+1
-    test_data[1,:] = np.cos(x-0.10*p)+1
-    test_data[2,:] = np.cos(x-0.15*p)+1
+for pos in x:
+    test_data[0].append(np.cos(pos-0.05)+1)
+    test_data[1].append(np.cos(pos-0.10)+1)
+    test_data[2].append(np.cos(pos-0.15)+1)
     test.update(x, test_data)
 
     time.sleep(0.1)

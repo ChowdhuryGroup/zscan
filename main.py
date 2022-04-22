@@ -12,7 +12,7 @@ keysight_oscope.select_channels((1,))
 stage = stage_control.VXMController(step_size=0.0254)
 
 # Step locations
-positions = np.arange(0, stage.max_index, 50, dtype=int) #stage.max_index
+positions = np.arange(1700, 3500, 10, dtype=int) #stage.max_index
 
 
 # 3 Rows, 1 for each channel
