@@ -71,7 +71,7 @@ class Oscilloscope:
 
     def set_signal_duration(self, duration: str): #float):
         # Set signal duration in seconds (maximum 500s)
-        print(type(duration))
+        #print(type(duration))
         self.inst.write(':TIMebase:RANGe '+duration) #str(duration))
     
 
