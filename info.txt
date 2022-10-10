@@ -1,0 +1,2 @@
+Naming convention: year-month-day_rawvoltage_photodiodesused_flakenumber_startposition_stepsize_endposition_power.tsv
+                                                ^either c (closed), o (open), 2 (both)

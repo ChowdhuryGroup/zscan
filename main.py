@@ -3,6 +3,14 @@ import stage_control
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+input_params = open('input.txt').readlines()
+for line in input_params:
+    line.strip('\n')
+    line.split(' ')
+print(input_params)
+
+
 # Initialize Devices
 keysight_oscope = oscilloscope.Oscilloscope('/opt/keysight/iolibs/libktvisa32.so')
 keysight_oscope.select_channels((1,))
@@ -13,7 +21,7 @@ stage = stage_control.VXMController(step_size=0.0254)
 
 # Step locations
 index_spacing = int(input('What is the step size? '))
-positions = np.arange(0, stage.max_index, index_spacing, dtype=int) #stage.max_index
+positions = np.arange(0,stage.max_index, index_spacing, dtype=int) #stage.max_index
 
 
 # 3 Rows, 1 for each channel
